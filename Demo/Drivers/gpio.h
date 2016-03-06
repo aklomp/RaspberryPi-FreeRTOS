@@ -3,7 +3,6 @@
 
 // GPIO event detect types
 enum GpioDetect {
-	GPIO_DETECT_NONE,
 	GPIO_DETECT_RISING,
 	GPIO_DETECT_FALLING,
 	GPIO_DETECT_HIGH,
