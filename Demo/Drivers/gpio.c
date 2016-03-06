@@ -52,7 +52,7 @@ gpioFunctionSet (const unsigned int pin, const unsigned int func)
 }
 
 void
-gpioDirectionSet (const unsigned int pin, const enum GPIO_DIR dir)
+gpioDirectionSet (const unsigned int pin, const enum GpioDir dir)
 {
 	gpioFunctionSet(pin, dir);
 }
@@ -77,61 +77,63 @@ gpioRead (const unsigned int pin)
 }
 
 void
-gpioDetectEnable (const unsigned int pin, const enum DETECT_TYPE type)
+gpioDetectEnable (const unsigned int pin, const enum GpioDetect type)
 {
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	switch(type) {
-	case DETECT_RISING:
+	switch (type)
+	{
+	case GPIO_DETECT_RISING:
 		pRegs->GPREN[bank] |= mask;
 		break;
-	case DETECT_FALLING:
+	case GPIO_DETECT_FALLING:
 		pRegs->GPFEN[bank] |= mask;
 		break;
-	case DETECT_HIGH:
+	case GPIO_DETECT_HIGH:
 		pRegs->GPHEN[bank] |= mask;
 		break;
-	case DETECT_LOW:
+	case GPIO_DETECT_LOW:
 		pRegs->GPLEN[bank] |= mask;
 		break;
-	case DETECT_RISING_ASYNC:
+	case GPIO_DETECT_RISING_ASYNC:
 		pRegs->GPAREN[bank] |= mask;
 		break;
-	case DETECT_FALLING_ASYNC:
+	case GPIO_DETECT_FALLING_ASYNC:
 		pRegs->GPAFEN[bank] |= mask;
 		break;
-	case DETECT_NONE:
+	case GPIO_DETECT_NONE:
 		break;
 	}
 }
 
 void
-gpioDetectDisable (const unsigned int pin, const enum DETECT_TYPE type)
+gpioDetectDisable (const unsigned int pin, const enum GpioDetect type)
 {
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	switch(type) {
-	case DETECT_RISING:
+	switch (type)
+	{
+	case GPIO_DETECT_RISING:
 		pRegs->GPREN[bank] &= ~mask;
 		break;
-	case DETECT_FALLING:
+	case GPIO_DETECT_FALLING:
 		pRegs->GPFEN[bank] &= ~mask;
 		break;
-	case DETECT_HIGH:
+	case GPIO_DETECT_HIGH:
 		pRegs->GPHEN[bank] &= ~mask;
 		break;
-	case DETECT_LOW:
+	case GPIO_DETECT_LOW:
 		pRegs->GPLEN[bank] &= ~mask;
 		break;
-	case DETECT_RISING_ASYNC:
+	case GPIO_DETECT_RISING_ASYNC:
 		pRegs->GPAREN[bank] &= ~mask;
 		break;
-	case DETECT_FALLING_ASYNC:
+	case GPIO_DETECT_FALLING_ASYNC:
 		pRegs->GPAFEN[bank] &= ~mask;
 		break;
-	case DETECT_NONE:
+	case GPIO_DETECT_NONE:
 		break;
 	}
 }

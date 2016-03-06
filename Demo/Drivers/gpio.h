@@ -1,36 +1,36 @@
 #ifndef _GPIO_H_
 #define _GPIO_H_
 
-/* GPIO event detect types */
-enum DETECT_TYPE {
-	DETECT_NONE,
-	DETECT_RISING,
-	DETECT_FALLING,
-	DETECT_HIGH,
-	DETECT_LOW,
-	DETECT_RISING_ASYNC,
-	DETECT_FALLING_ASYNC
+// GPIO event detect types
+enum GpioDetect {
+	GPIO_DETECT_NONE,
+	GPIO_DETECT_RISING,
+	GPIO_DETECT_FALLING,
+	GPIO_DETECT_HIGH,
+	GPIO_DETECT_LOW,
+	GPIO_DETECT_RISING_ASYNC,
+	GPIO_DETECT_FALLING_ASYNC,
 };
 
-/* GPIO pull up or down states */
-enum PULL_STATE {
-	PULL_DISABLE,
-	PULL_UP,
-	PULL_DOWN,
-	PULL_RESERVED
+// GPIO pull up or down states
+enum GpioPull {
+	GPIO_PULL_DISABLE,
+	GPIO_PULL_UP,
+	GPIO_PULL_DOWN,
+	GPIO_PULL_RESERVED,
 };
 
-/* Pin data direction */
-enum GPIO_DIR {
-	GPIO_IN,
-	GPIO_OUT
+// Pin data direction
+enum GpioDir {
+	GPIO_DIR_IN,
+	GPIO_DIR_OUT,
 };
 
 // GPIO pin setup:
 void gpioFunctionSet (const unsigned int pin, const unsigned int func);
 
 // A simple wrapper around SetGpioFunction:
-void gpioDirectionSet (const unsigned int pin, const enum GPIO_DIR dir);
+void gpioDirectionSet (const unsigned int pin, const enum GpioDir dir);
 
 // Set GPIO output level:
 void gpioWrite (const unsigned int pin, const unsigned int val);
@@ -39,11 +39,11 @@ void gpioWrite (const unsigned int pin, const unsigned int val);
 unsigned int gpioRead (const unsigned int pin);
 
 // GPIO pull up/down resistor control function (NOT YET IMPLEMENTED):
-int gpioPud (const unsigned int pin, const enum PULL_STATE state);
+int gpioPud (const unsigned int pin, const enum GpioPull state);
 
 // Interrupt related functions:
-void gpioDetectEnable   (const unsigned int pin, const enum DETECT_TYPE type);
-void gpioDetectDisable  (const unsigned int pin, const enum DETECT_TYPE type);
+void gpioDetectEnable   (const unsigned int pin, const enum GpioDetect type);
+void gpioDetectDisable  (const unsigned int pin, const enum GpioDetect type);
 void gpioInterruptClear (const unsigned int pin);
 
 #endif
