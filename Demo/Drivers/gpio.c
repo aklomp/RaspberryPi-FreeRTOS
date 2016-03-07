@@ -14,6 +14,19 @@
 // Define a GPIO register:
 #define GPIO_REG(offs)	((volatile unsigned long *) (GPIO_REG_BASE + offs))
 
+// Function selection:
+#define GPFSEL		GPIO_REG (0x0000)
+
+// Set and clear pins:
+#define GPSET		GPIO_REG (0x001C)
+#define GPCLR		GPIO_REG (0x0028)
+
+// Pin level readout:
+#define GPLEV		GPIO_REG (0x0034)
+
+// Pin event detection status:
+#define GPEDS		GPIO_REG (0x0040)
+
 // Pin event detection:
 #define GPREN		GPIO_REG (0x004C)
 #define GPFEN		GPIO_REG (0x0058)
@@ -22,33 +35,18 @@
 #define GPAREN		GPIO_REG (0x007C)
 #define GPAFEN		GPIO_REG (0x0088)
 
-typedef struct {
-	unsigned long GPFSEL[6];	///< Function selection registers.
-	unsigned long Reserved_1;
-	unsigned long GPSET[2];
-	unsigned long Reserved_2;
-	unsigned long GPCLR[2];
-	unsigned long Reserved_3;
-	unsigned long GPLEV[2];
-	unsigned long Reserved_4;
-	unsigned long GPEDS[2];
-	unsigned long Reserved_5;
-} __attribute__((packed))
-BCM2835_GPIO_REGS;
-
-volatile BCM2835_GPIO_REGS * const pRegs = (BCM2835_GPIO_REGS *) (GPIO_REG_BASE);
-
 void
 gpioFunctionSet (const unsigned int pin, const unsigned int func)
 {
 	int offset = pin / 10;
 
-	unsigned long val = pRegs->GPFSEL[offset];	// Read in the original register value.
+	// Read in the original register value:
+	unsigned long val = GPFSEL[offset];
 
 	int item = pin % 10;
 	val &= ~(0x7 << (item * 3));
 	val |= ((func & 0x7) << (item * 3));
-	pRegs->GPFSEL[offset] = val;
+	GPFSEL[offset] = val;
 }
 
 void
@@ -63,8 +61,8 @@ gpioWrite (const unsigned int pin, const unsigned int val)
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	val ? (pRegs->GPSET[bank] |= mask)
-	    : (pRegs->GPCLR[bank] |= mask);
+	val ? (GPSET[bank] |= mask)
+	    : (GPCLR[bank] |= mask);
 }
 
 unsigned int
@@ -73,7 +71,7 @@ gpioRead (const unsigned int pin)
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	return ((pRegs->GPLEV[bank]) >> mask) & 1;
+	return (GPLEV[bank] & mask) ? 1 : 0;
 }
 
 static volatile unsigned long *detect_map[] = {
@@ -109,5 +107,5 @@ gpioInterruptClear (const unsigned int pin)
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	pRegs->GPEDS[bank] = mask;
+	GPEDS[bank] = mask;
 }
