@@ -36,23 +36,32 @@
 #define GPAFEN		GPIO_REG (0x0088)
 
 void
-gpioFunctionSet (const unsigned int pin, const unsigned int func)
+gpioFunctionSet (const unsigned int pin, const enum GpioFunc func)
 {
-	int offset = pin / 10;
+	unsigned long bank = pin / 10;
+	unsigned long item = pin % 10;
+	unsigned long mask = 7UL << (item * 3);
 
-	// Read in the original register value:
-	unsigned long val = GPFSEL[offset];
+	// Get current register value:
+	unsigned long reg = GPFSEL[bank];
 
-	int item = pin % 10;
-	val &= ~(0x7 << (item * 3));
-	val |= ((func & 0x7) << (item * 3));
-	GPFSEL[offset] = val;
+	// Mask out the bits for this pin:
+	reg &= ~mask;
+
+	// Insert new bits for this pin:
+	reg |= (unsigned long)func << (item * 3);
+
+	// Store back:
+	GPFSEL[bank] = reg;
 }
 
-void
-gpioDirectionSet (const unsigned int pin, const enum GpioDir dir)
+enum GpioFunc
+gpioFunctionGet (const unsigned int pin)
 {
-	gpioFunctionSet(pin, dir);
+	unsigned long bank = pin / 10;
+	unsigned long item = pin % 10;
+
+	return (GPFSEL[bank] >> (item * 3)) & 7;
 }
 
 void

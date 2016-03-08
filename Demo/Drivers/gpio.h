@@ -19,17 +19,23 @@ enum GpioPull {
 	GPIO_PULL_RESERVED,
 };
 
-// Pin data direction
-enum GpioDir {
-	GPIO_DIR_IN,
-	GPIO_DIR_OUT,
+// Pin functions
+enum GpioFunc {
+	GPIO_FUNC_INPUT		= 0,	// Pin is input
+	GPIO_FUNC_OUTPUT	= 1,	// Pin is output
+	GPIO_FUNC_ALT_0		= 4,	// Alternative function 0
+	GPIO_FUNC_ALT_1		= 5,	// Alternative function 1
+	GPIO_FUNC_ALT_2		= 6,	// Alternative function 2
+	GPIO_FUNC_ALT_3		= 7,	// Alternative function 3
+	GPIO_FUNC_ALT_4		= 3,	// Alternative function 4
+	GPIO_FUNC_ALT_5		= 2,	// Alternative function 5
 };
 
-// GPIO pin setup:
-void gpioFunctionSet (const unsigned int pin, const unsigned int func);
+// Set GPIO pin function:
+void gpioFunctionSet (const unsigned int pin, const enum GpioFunc func);
 
-// A simple wrapper around SetGpioFunction:
-void gpioDirectionSet (const unsigned int pin, const enum GpioDir dir);
+// Get GPIO pin function:
+enum GpioFunc gpioFunctionGet (const unsigned int pin);
 
 // Set GPIO output level:
 void gpioWrite (const unsigned int pin, const unsigned int val);

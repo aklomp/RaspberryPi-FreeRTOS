@@ -34,7 +34,7 @@ void task2(void *pParam) {
  **/
 void main (void)
 {
-	gpioFunctionSet(16, 1);			// RDY led
+	gpioFunctionSet(16, GPIO_FUNC_OUTPUT);		// RDY led
 
 	xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
 	xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
