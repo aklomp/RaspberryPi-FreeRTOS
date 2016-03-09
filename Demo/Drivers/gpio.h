@@ -46,9 +46,9 @@ unsigned int gpioRead (const unsigned int pin);
 // GPIO pull up/down resistor control function (NOT YET IMPLEMENTED):
 int gpioPud (const unsigned int pin, const enum GpioPull state);
 
-// Interrupt related functions:
-void gpioDetectEnable   (const unsigned int pin, const enum GpioDetect type);
-void gpioDetectDisable  (const unsigned int pin, const enum GpioDetect type);
-void gpioInterruptClear (const unsigned int pin);
+// Event detection functions:
+void gpioDetectEnable     (const unsigned int pin, const enum GpioDetect type);
+void gpioDetectDisable    (const unsigned int pin, const enum GpioDetect type);
+unsigned int gpioDetected (const unsigned int pin);
 
 #endif

@@ -110,11 +110,19 @@ gpioDetectDisable (const unsigned int pin, const enum GpioDetect type)
 	detect_map[type][bank] &= ~mask;
 }
 
-void
-gpioInterruptClear (const unsigned int pin)
+unsigned int
+gpioDetected (const unsigned int pin)
 {
 	unsigned long bank = BANK(pin);
 	unsigned long mask = MASK(pin);
 
-	GPEDS[bank] = mask;
+	// No event if bit not set:
+	if (!(GPEDS[bank] & mask))
+		return 0;
+
+	// Clear event by setting bit to 1:
+	GPEDS[bank] |= mask;
+
+	// Confirm event:
+	return 1;
 }
