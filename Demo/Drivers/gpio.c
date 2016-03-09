@@ -38,47 +38,49 @@ typedef struct {
 
 volatile BCM2835_GPIO_REGS * const pRegs = (BCM2835_GPIO_REGS *) (0x20200000);
 
-
-void SetGpioFunction(unsigned int pinNum, unsigned int funcNum) {
-
-	int offset = pinNum / 10;
+void
+gpioFunctionSet (const unsigned int pin, const unsigned int func)
+{
+	int offset = pin / 10;
 
 	unsigned long val = pRegs->GPFSEL[offset];	// Read in the original register value.
 
-	int item = pinNum % 10;
+	int item = pin % 10;
 	val &= ~(0x7 << (item * 3));
-	val |= ((funcNum & 0x7) << (item * 3));
+	val |= ((func & 0x7) << (item * 3));
 	pRegs->GPFSEL[offset] = val;
 }
 
-void SetGpioDirection(unsigned int pinNum, enum GPIO_DIR dir) {
-	SetGpioFunction(pinNum,dir);
+void
+gpioDirectionSet (const unsigned int pin, const enum GPIO_DIR dir)
+{
+	gpioFunctionSet(pin, dir);
 }
 
-void SetGpio(unsigned int pinNum, unsigned int pinVal)
+void
+gpioWrite (const unsigned int pin, const unsigned int val)
 {
-	unsigned long bank = BANK(pinNum);
-	unsigned long mask = MASK(pinNum);
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
 
-	if(pinVal) {
-		pRegs->GPSET[bank] |= mask;
-	} else {
-		pRegs->GPCLR[bank] |= mask;
-	}
+	val ? (pRegs->GPSET[bank] |= mask)
+	    : (pRegs->GPCLR[bank] |= mask);
 }
 
-int ReadGpio(unsigned int pinNum)
+unsigned int
+gpioRead (const unsigned int pin)
 {
-	unsigned long bank = BANK(pinNum);
-	unsigned long mask = MASK(pinNum);
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
 
 	return ((pRegs->GPLEV[bank]) >> mask) & 1;
 }
 
-void EnableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
+void
+gpioDetectEnable (const unsigned int pin, const enum DETECT_TYPE type)
 {
-	unsigned long bank = BANK(pinNum);
-	unsigned long mask = MASK(pinNum);
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
 
 	switch(type) {
 	case DETECT_RISING:
@@ -104,10 +106,11 @@ void EnableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 	}
 }
 
-void DisableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
+void
+gpioDetectDisable (const unsigned int pin, const enum DETECT_TYPE type)
 {
-	unsigned long bank = BANK(pinNum);
-	unsigned long mask = MASK(pinNum);
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
 
 	switch(type) {
 	case DETECT_RISING:
@@ -133,10 +136,11 @@ void DisableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 	}
 }
 
-void ClearGpioInterrupt(unsigned int pinNum)
+void
+gpioInterruptClear (const unsigned int pin)
 {
-	unsigned long bank = BANK(pinNum);
-	unsigned long mask = MASK(pinNum);
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
 
 	pRegs->GPEDS[bank] = mask;
 }

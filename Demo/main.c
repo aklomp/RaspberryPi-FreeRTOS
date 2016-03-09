@@ -9,7 +9,7 @@ void task1(void *pParam) {
 	int i = 0;
 	while(1) {
 		i++;
-		SetGpio(16, 1);
+		gpioWrite(16, 1);
 		vTaskDelay(200);
 	}
 }
@@ -20,7 +20,7 @@ void task2(void *pParam) {
 	while(1) {
 		i++;
 		vTaskDelay(100);
-		SetGpio(16, 0);
+		gpioWrite(16, 0);
 		vTaskDelay(100);
 	}
 }
@@ -34,7 +34,7 @@ void task2(void *pParam) {
  **/
 void main (void)
 {
-	SetGpioFunction(16, 1);			// RDY led
+	gpioFunctionSet(16, 1);			// RDY led
 
 	xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
 	xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);

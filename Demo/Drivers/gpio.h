@@ -26,23 +26,24 @@ enum GPIO_DIR {
 	GPIO_OUT
 };
 
-/* GPIO pin setup */
-void SetGpioFunction	(unsigned int pinNum, unsigned int funcNum);
-/* A simple wrapper around SetGpioFunction */
-void SetGpioDirection	(unsigned int pinNum, enum GPIO_DIR dir);
+// GPIO pin setup:
+void gpioFunctionSet (const unsigned int pin, const unsigned int func);
 
-/* Set GPIO output level */
-void SetGpio			(unsigned int pinNum, unsigned int pinVal);
+// A simple wrapper around SetGpioFunction:
+void gpioDirectionSet (const unsigned int pin, const enum GPIO_DIR dir);
 
-/* Read GPIO pin level */
-int ReadGpio			(unsigned int pinNum);
+// Set GPIO output level:
+void gpioWrite (const unsigned int pin, const unsigned int val);
 
-/* GPIO pull up/down resistor control function (NOT YET IMPLEMENTED) */
-int PudGpio				(unsigned int pinNum, enum PULL_STATE state);
+// Read GPIO pin level:
+unsigned int gpioRead (const unsigned int pin);
 
-/* Interrupt related functions */
-void EnableGpioDetect	(unsigned int pinNum, enum DETECT_TYPE type);
-void DisableGpioDetect	(unsigned int pinNum, enum DETECT_TYPE type);
-void ClearGpioInterrupt	(unsigned int pinNum);
+// GPIO pull up/down resistor control function (NOT YET IMPLEMENTED):
+int gpioPud (const unsigned int pin, const enum PULL_STATE state);
+
+// Interrupt related functions:
+void gpioDetectEnable   (const unsigned int pin, const enum DETECT_TYPE type);
+void gpioDetectDisable  (const unsigned int pin, const enum DETECT_TYPE type);
+void gpioInterruptClear (const unsigned int pin);
 
 #endif
