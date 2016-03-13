@@ -35,6 +35,10 @@
 #define GPAREN		GPIO_REG (0x007C)
 #define GPAFEN		GPIO_REG (0x0088)
 
+// Pull up/down/none:
+#define GPPUD		GPIO_REG (0x0094)
+#define GPPUDCLK	GPIO_REG (0x0098)
+
 void
 gpioFunctionSet (const unsigned int pin, const enum GpioFunc func)
 {
@@ -125,4 +129,46 @@ gpioDetected (const unsigned int pin)
 
 	// Confirm event:
 	return 1;
+}
+
+static inline void
+wait (unsigned long cycles)
+{
+	// Each loop iteration takes three instructions:
+	cycles /= 3;
+
+	// Busy-wait by decrementing the cycle counter until it reaches zero:
+	asm volatile (
+		"1: sub %0, %0, #1  \n\t"
+		"   cmp %0, #0      \n\t"
+		"   bne 1b          \n\t"
+		:
+		: "r" (cycles)
+		: "cc"
+	);
+}
+
+void
+gpioPull (const unsigned int pin, const enum GpioPull type)
+{
+	unsigned long bank = BANK(pin);
+	unsigned long mask = MASK(pin);
+
+	// Setup direction register:
+	*GPPUD = type;
+
+	// Wait 150 cycles to set up the control signal:
+	wait(150);
+
+	// Activate clock signal for this pin:
+	GPPUDCLK[bank] |= mask;
+
+	// Wait 150 cycles to hold the control signal:
+	wait(150);
+
+	// Remove control signal:
+	*GPPUD = 0;
+
+	// Remove clock signal:
+	GPPUDCLK[bank] = 0;
 }

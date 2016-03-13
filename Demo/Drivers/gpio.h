@@ -13,10 +13,10 @@ enum GpioDetect {
 
 // GPIO pull up or down states
 enum GpioPull {
-	GPIO_PULL_DISABLE,
-	GPIO_PULL_UP,
-	GPIO_PULL_DOWN,
-	GPIO_PULL_RESERVED,
+	GPIO_PULL_DISABLE	= 0,
+	GPIO_PULL_DOWN		= 1,
+	GPIO_PULL_UP		= 2,
+	GPIO_PULL_RESERVED	= 3,
 };
 
 // Pin functions
@@ -43,8 +43,8 @@ void gpioWrite (const unsigned int pin, const unsigned int val);
 // Read GPIO pin level:
 unsigned int gpioRead (const unsigned int pin);
 
-// GPIO pull up/down resistor control function (NOT YET IMPLEMENTED):
-int gpioPud (const unsigned int pin, const enum GpioPull state);
+// GPIO pull-up/down/none:
+void gpioPull (const unsigned int pin, const enum GpioPull type);
 
 // Event detection functions:
 void gpioDetectEnable     (const unsigned int pin, const enum GpioDetect type);
