@@ -5,6 +5,9 @@
 
 #include "gpio.h"
 
+#define BANK(pin)	((pin) >> 5)
+#define MASK(pin)	(1UL << ((pin) & 0x1F))
+
 typedef struct {
 	unsigned long	GPFSEL[6];	///< Function selection registers.
 	unsigned long	Reserved_1;
@@ -52,44 +55,49 @@ void SetGpioDirection(unsigned int pinNum, enum GPIO_DIR dir) {
 	SetGpioFunction(pinNum,dir);
 }
 
-void SetGpio(unsigned int pinNum, unsigned int pinVal) {
-	unsigned long offset=pinNum/32;
-	unsigned long mask=(1<<(pinNum%32));
+void SetGpio(unsigned int pinNum, unsigned int pinVal)
+{
+	unsigned long bank = BANK(pinNum);
+	unsigned long mask = MASK(pinNum);
 
 	if(pinVal) {
-		pRegs->GPSET[offset]|=mask;
+		pRegs->GPSET[bank] |= mask;
 	} else {
-		pRegs->GPCLR[offset]|=mask;
+		pRegs->GPCLR[bank] |= mask;
 	}
 }
 
-int ReadGpio(unsigned int pinNum) {
-	return ((pRegs->GPLEV[pinNum/32])>>(pinNum%32))&1;
+int ReadGpio(unsigned int pinNum)
+{
+	unsigned long bank = BANK(pinNum);
+	unsigned long mask = MASK(pinNum);
+
+	return ((pRegs->GPLEV[bank]) >> mask) & 1;
 }
 
 void EnableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 {
-	unsigned long mask=(1<<pinNum);
-	unsigned long offset=pinNum/32;
-	
+	unsigned long bank = BANK(pinNum);
+	unsigned long mask = MASK(pinNum);
+
 	switch(type) {
 	case DETECT_RISING:
-		pRegs->GPREN[offset]|=mask;
+		pRegs->GPREN[bank] |= mask;
 		break;
 	case DETECT_FALLING:
-		pRegs->GPFEN[offset]|=mask;
+		pRegs->GPFEN[bank] |= mask;
 		break;
 	case DETECT_HIGH:
-		pRegs->GPHEN[offset]|=mask;
+		pRegs->GPHEN[bank] |= mask;
 		break;
 	case DETECT_LOW:
-		pRegs->GPLEN[offset]|=mask;
+		pRegs->GPLEN[bank] |= mask;
 		break;
 	case DETECT_RISING_ASYNC:
-		pRegs->GPAREN[offset]|=mask;
+		pRegs->GPAREN[bank] |= mask;
 		break;
 	case DETECT_FALLING_ASYNC:
-		pRegs->GPAFEN[offset]|=mask;
+		pRegs->GPAFEN[bank] |= mask;
 		break;
 	case DETECT_NONE:
 		break;
@@ -98,27 +106,27 @@ void EnableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 
 void DisableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 {
-	unsigned long mask=~(1<<(pinNum%32));
-	unsigned long offset=pinNum/32;
-	
+	unsigned long bank = BANK(pinNum);
+	unsigned long mask = MASK(pinNum);
+
 	switch(type) {
 	case DETECT_RISING:
-		pRegs->GPREN[offset]&=mask;
+		pRegs->GPREN[bank] &= ~mask;
 		break;
 	case DETECT_FALLING:
-		pRegs->GPFEN[offset]&=mask;
+		pRegs->GPFEN[bank] &= ~mask;
 		break;
 	case DETECT_HIGH:
-		pRegs->GPHEN[offset]&=mask;
+		pRegs->GPHEN[bank] &= ~mask;
 		break;
 	case DETECT_LOW:
-		pRegs->GPLEN[offset]&=mask;
+		pRegs->GPLEN[bank] &= ~mask;
 		break;
 	case DETECT_RISING_ASYNC:
-		pRegs->GPAREN[offset]&=mask;
+		pRegs->GPAREN[bank] &= ~mask;
 		break;
 	case DETECT_FALLING_ASYNC:
-		pRegs->GPAFEN[offset]&=mask;
+		pRegs->GPAFEN[bank] &= ~mask;
 		break;
 	case DETECT_NONE:
 		break;
@@ -127,8 +135,8 @@ void DisableGpioDetect(unsigned int pinNum, enum DETECT_TYPE type)
 
 void ClearGpioInterrupt(unsigned int pinNum)
 {
-	unsigned long mask=(1<<(pinNum%32));
-	unsigned long offset=pinNum/32;
+	unsigned long bank = BANK(pinNum);
+	unsigned long mask = MASK(pinNum);
 
-	pRegs->GPEDS[offset]=mask;
+	pRegs->GPEDS[bank] = mask;
 }
